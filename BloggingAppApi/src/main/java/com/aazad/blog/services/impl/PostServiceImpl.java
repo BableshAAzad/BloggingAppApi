@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.aazad.blog.entities.Category;
@@ -75,11 +76,20 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostResponse getAllPost(Integer pageNumber, Integer pageSize) {
+	public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 //	public List<PostDto> getAllPost(Integer pageNumber, Integer pageSize) {
 //		int pageNumber = 1;
 //		int pageSise = 10;
-		Pageable p = PageRequest.of(pageNumber, pageSize);
+//		Sort sort = null;
+//		if (sortDir.equalsIgnoreCase("asc")) {
+//			sort = Sort.by(sortBy).ascending();
+//		} else {
+//			sort = Sort.by(sortBy).descending();
+//		}
+		Sort sort = (sortDir.equalsIgnoreCase("asc")) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//		Pageable p = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+//		Pageable p = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).descending()); // for descending order
+		Pageable p = PageRequest.of(pageNumber, pageSize, sort);
 		Page<Post> pagePost = this.postRepo.findAll(p);
 		List<Post> allPosts = pagePost.getContent();
 
@@ -95,7 +105,7 @@ public class PostServiceImpl implements PostService {
 		postResponse.setTotalElements(pagePost.getTotalElements());
 		postResponse.setTotalPages(pagePost.getTotalPages());
 		postResponse.setLastPage(pagePost.isLast());
-		
+
 		return postResponse;
 	}
 
